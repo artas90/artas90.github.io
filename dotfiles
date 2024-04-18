@@ -1,0 +1,7 @@
+git clone https://github.com/artas90/dotfiles.git ~/.dotfiles && \
+echo 'source ~/.dotfiles/zsh/init.zsh' > ~/.zshrc && \
+touch ~/.dotfiles/zsh/_local.zsh && \
+cd ~/.dotfiles/configs && \
+bash setup-base.sh && \
+cd && \
+true

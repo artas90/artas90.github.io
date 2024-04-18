@@ -1,0 +1,18 @@
+_ghfz="https://raw.githubusercontent.com/junegunn/fzf/master/shell"
+
+if [ `whoami` = "root" ]; then
+  _destfz="/usr/local/opt/fzf/shell"
+else
+  _destfz="$HOME/.local/share/fzf/shell"
+fi
+
+mkdir -p $_destfz
+
+_getfzf() {
+  curl -s "$_ghfz/$1" > "$_destfz/$1" && echo "$_ghfz/$1 -> $_destfz/$1"
+}
+
+_getfzf "completion.zsh"
+_getfzf "key-bindings.zsh"
+
+unset _ghfz _destfz _getfzf
