@@ -1,13 +1,16 @@
 if [ `whoami` = "root" ]; then
-  hxver="24.03"
+  _hxver="24.03"
+  _hxarch=$(uname -i)
 
   cd /opt && \
-  curl -s -L https://github.com/helix-editor/helix/releases/download/$hxver/helix-$hxver-x86_64-linux.tar.xz | tar xJ -C . && \
-  mv helix-$hxver-x86_64-linux helix && \
-  ln -sfv /opt/helix/hx /usr/local/bin/hx
+  curl -s -L https://github.com/helix-editor/helix/releases/download/$_hxver/helix-$_hxver-$_hxarch-linux.tar.xz | tar xJ -C . && \
+  mv helix-$_hxver-$_hxarch-linux helix && \
+  ln -sfv /opt/helix/hx /usr/bin/hx
 
   cd
 fi
 
 mkdir -p $HOME/.config/helix && \
 curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/other/helix/config.toml > $HOME/.config/helix/config.toml
+
+unset _hxver _hxarch

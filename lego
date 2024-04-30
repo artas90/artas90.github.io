@@ -1,10 +1,19 @@
 if [ `whoami` != "root" ]; then
-  echo "must be run as root"
+  echo "error: must be run as root"
+  exit
+fi
+
+if [ `uname -i` == "x86_64" ]; then
+  _legoarch="amd64"
+elif [ `uname -i` == "aarch64" ]; then
+  _legoarch="arm64"
+else
+  echo "error: unknown architecture"
   exit
 fi
 
 _legover="4.16.1" && \
-_legopkg="https://github.com/go-acme/lego/releases/download/v${_legover}/lego_v${_legover}_linux_amd64.tar.gz"
+_legopkg="https://github.com/go-acme/lego/releases/download/v${_legover}/lego_v${_legover}_linux_${_legoarch}.tar.gz"
 
 mkdir _legopkg && \
 curl -s -L "${_legopkg}" | tar xz -C ./_legopkg && \
@@ -12,4 +21,4 @@ mv ./_legopkg/lego /usr/bin/lego && \
 rm -rf _legopkg && \
 echo "created /usr/bin/lego"
 
-unset _legover _legopkg
+unset _legover _legopkg _legoarch
