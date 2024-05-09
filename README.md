@@ -9,6 +9,10 @@ curl https://artas90.github.io/fzf | sh
 ```
 
 ```
+curl https://artas90.github.io/micro | sh
+```
+
+```
 curl https://artas90.github.io/helix | sh
 ```
 

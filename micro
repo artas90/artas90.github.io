@@ -1,0 +1,24 @@
+if [ `whoami` = "root" ]; then
+  if [ `uname -i` == "x86_64" ]; then
+    _microarch="linux64"
+  elif [ `uname -i` == "aarch64" ]; then
+    _microarch="linux-arm64"
+  else
+    echo "error: unknown architecture"
+    exit
+  fi
+
+  _microver="2.0.13" && \
+  _micropkg="https://github.com/zyedidia/micro/releases/download/v${_microver}/micro-${_microver}-${_microarch}.tar.gz"
+
+  mkdir _micropkg && \
+  curl -s -L "${_micropkg}" | tar xz -C ./_micropkg && \
+  mv ./_micropkg/micro-${_microver}/micro /usr/bin/micro && \
+  rm -rf _micropkg && \
+  echo "created /usr/bin/micro"
+fi
+
+mkdir -p $HOME/.config/micro && \
+curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
+
+unset _microver _micropkg _microarch
