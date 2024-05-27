@@ -1,6 +1,6 @@
 if [ `whoami` = "root" ]; then
   _hxver="24.03"
-  _hxarch=$(uname -i)
+  _hxarch=$(uname -m)
 
   cd /opt && \
   curl -s -L https://github.com/helix-editor/helix/releases/download/$_hxver/helix-$_hxver-$_hxarch-linux.tar.xz | tar xJ -C . && \
@@ -12,5 +12,6 @@ fi
 
 mkdir -p $HOME/.config/helix && \
 curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/other/helix/config.toml > $HOME/.config/helix/config.toml
+echo "created $HOME/.config/helix/config.toml"
 
 unset _hxver _hxarch

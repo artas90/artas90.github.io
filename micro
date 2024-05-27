@@ -1,7 +1,7 @@
 if [ `whoami` = "root" ]; then
-  if [ `uname -i` == "x86_64" ]; then
+  if [ `uname -m` == "x86_64" ]; then
     _microarch="linux64"
-  elif [ `uname -i` == "aarch64" ]; then
+  elif [ `uname -m` == "aarch64" ]; then
     _microarch="linux-arm64"
   else
     echo "error: unknown architecture"
@@ -20,5 +20,6 @@ fi
 
 mkdir -p $HOME/.config/micro && \
 curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
+echo "created $HOME/.config/micro/settings.json"
 
 unset _microver _micropkg _microarch
