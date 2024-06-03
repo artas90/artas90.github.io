@@ -1,0 +1,13 @@
+if [ `whoami` != "root" ]; then
+  echo "error: must be run as root"
+  exit
+fi
+
+_yaziver="0.2.5" && \
+_yazipkg="https://artas90.github.io/pkgs/yazi-${_yaziver}-$(uname -m)-linux"
+
+curl -s -L "${_yazipkg}" > /usr/bin/yazi && \
+chmod +x /usr/bin/yazi && \
+echo "created /usr/bin/yazi"
+
+unset _yaziver _yazipkg
