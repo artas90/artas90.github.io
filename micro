@@ -1,7 +1,7 @@
 if [ `whoami` = "root" ]; then
-  if [ `uname -m` == "x86_64" ]; then
+  if [ `uname -m` = "x86_64" ]; then
     _microarch="linux64"
-  elif [ `uname -m` == "aarch64" ]; then
+  elif [ `uname -m` = "aarch64" ]; then
     _microarch="linux-arm64"
   else
     echo "error: unknown architecture"

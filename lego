@@ -1,11 +1,11 @@
-if [ `whoami` != "root" ]; then
+if [ ! `whoami` = "root" ]; then
   echo "error: must be run as root"
   exit
 fi
 
-if [ `uname -m` == "x86_64" ]; then
+if [ `uname -m` = "x86_64" ]; then
   _legoarch="amd64"
-elif [ `uname -m` == "aarch64" ]; then
+elif [ `uname -m` = "aarch64" ]; then
   _legoarch="arm64"
 else
   echo "error: unknown architecture"
