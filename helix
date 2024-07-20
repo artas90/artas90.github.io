@@ -1,5 +1,5 @@
 if [ `whoami` = "root" ]; then
-  _hxver="24.03"
+  _hxver="24.07"
   _hxarch=$(uname -m)
 
   cd /opt && \
