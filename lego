@@ -12,7 +12,7 @@ else
   exit
 fi
 
-_legover="4.16.1" && \
+_legover="4.17.4" && \
 _legopkg="https://github.com/go-acme/lego/releases/download/v${_legover}/lego_v${_legover}_linux_${_legoarch}.tar.gz"
 
 mkdir _legopkg && \
