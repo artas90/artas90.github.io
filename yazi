@@ -3,7 +3,7 @@ if [ ! `whoami` = "root" ]; then
   exit
 fi
 
-_yaziver="0.2.5" && \
+_yaziver="0.3.0" && \
 _yazipkg="https://artas90.github.io/pkgs/yazi-${_yaziver}-$(uname -m)-linux"
 
 curl -s -L "${_yazipkg}" > /usr/bin/yazi && \
