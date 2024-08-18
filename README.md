@@ -13,6 +13,10 @@ curl https://artas90.github.io/micro | sh
 ```
 
 ```
+curl https://artas90.github.io/yazi | sh
+```
+
+```
 curl https://artas90.github.io/helix | sh
 ```
 
