@@ -1,0 +1,14 @@
+_devsetupdistribid=`grep DISTRIB_ID /etc/*-release | awk -F '=' '{print tolower($2)}'`
+if [ "$_devsetupdistribid" = 'ubuntu' ]; then
+  sudo apt install -y zsh fzf mc nano tmux htop
+fi
+
+curl https://artas90.github.io/dotfiles | sh
+curl https://artas90.github.io/fzf | sudo sh
+curl https://artas90.github.io/micro | sudo sh
+curl https://artas90.github.io/yazi | sudo sh
+
+echo >> $HOME/.tmux.conf
+echo "set-option -g default-shell \""`which zsh`"\"" >> $HOME/.tmux.conf
+
+unset _devsetupdistribid
