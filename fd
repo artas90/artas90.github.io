@@ -1,0 +1,15 @@
+if [ ! `whoami` = "root" ]; then
+  echo "error: must be run as root"
+  exit
+fi
+
+_fdver="10.2.0" && \
+_fdpkg="fd-v${_fdver}-$(uname -m)-unknown-linux-musl"
+_fdurl="https://github.com/sharkdp/fd/releases/download/v${_fdver}/${_fdpkg}.tar.gz"
+
+curl -s -L "${_fdurl}" | tar xz -C . && \
+mv ./${_fdpkg}/fd /usr/bin/fd && \
+rm -rf ${_fdpkg} && \
+echo "created /usr/bin/fd"
+
+unset _fdver _fdpkg _fdurl
