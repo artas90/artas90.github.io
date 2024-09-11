@@ -1,6 +1,6 @@
 _devsetupdistribid=`grep DISTRIB_ID /etc/*-release | awk -F '=' '{print tolower($2)}'`
 if [ "$_devsetupdistribid" = 'ubuntu' ]; then
-  sudo apt install -y zsh fzf mc nano tmux htop
+  sudo apt install -y curl git zsh tmux mc htop fzf ripgrep nano
 fi
 
 curl https://artas90.github.io/dotfiles | sh
