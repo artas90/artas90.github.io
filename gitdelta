@@ -1,0 +1,15 @@
+if [ ! `whoami` = "root" ]; then
+  echo "error: must be run as root"
+  exit
+fi
+
+_gdver="0.18.2" && \
+_gdpkg="delta-${_gdver}-$(uname -m)-unknown-linux-musl" \
+_gdurl="https://github.com/dandavison/delta/releases/download/${_gdver}/${_gdpkg}.tar.gz"
+
+curl -s -L "${_gdurl}" | tar xz -C . && \
+mv ./${_gdpkg}/delta /usr/bin/delta && \
+rm -rf ${_gdpkg} && \
+echo "created /usr/bin/delta"
+
+unset _gdver _gdpkg _gdurl
