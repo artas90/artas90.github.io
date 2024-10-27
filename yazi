@@ -1,13 +1,22 @@
-if [ ! `whoami` = "root" ]; then
-  echo "error: must be run as root"
-  exit
-fi
+_yazifetch() {
+  local version="0.3.3"
+  local bin=""
+  local exe=""
 
-_yaziver="0.3.3" && \
-_yazipkg="https://artas90.github.io/pkgs/yazi-${_yaziver}-$(uname -m)-linux"
+  case "$(uname -s)" in
+    Linux)        bin="unknown-linux-musl" ;;
+    MINGW*|MSYS*) bin="pc-windows-msvc" exe=".exe" ;;
+    *)            echo "error: unsupported os"; return ;;
+  esac
 
-curl -s -L "${_yazipkg}" > /usr/bin/yazi && \
-chmod +x /usr/bin/yazi && \
-echo "created /usr/bin/yazi"
+  if [ "$bin" = "unknown-linux-musl" ] && [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
 
-unset _yaziver _yazipkg
+  local pkg="https://artas90.github.io/pkgs/yazi-${version}-$(uname -m)-${bin}${exe}"
+
+  curl -s -L "${pkg}" > "/usr/bin/yazi${exe}" && \
+  chmod +x "/usr/bin/yazi${exe}" && \
+  echo "created /usr/bin/yazi${exe}"
+}
+_yazifetch; unset _yazifetch
