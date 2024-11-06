@@ -1128,12 +1128,13 @@ document.title = 'MiWiFi';
     }
   }
 
+  const EXCLUDE_NODES = ['html', 'head', 'style', 'title', 'link', 'meta', 'script', 'object', 'iframe'];
+
   function findAndReplace(searchNode) {
     const childNodes = (searchNode || document.body).childNodes;
-    const excludes = ['html', 'head', 'style', 'title', 'link', 'meta', 'script', 'object', 'iframe'];
 
     for (const currentNode of childNodes) {
-      if (currentNode.nodeType === ELEMENT_NODE && !excludes.includes(currentNode.nodeName.toLowerCase())) {
+      if (currentNode.nodeType === ELEMENT_NODE && !EXCLUDE_NODES.includes(currentNode.nodeName.toLowerCase())) {
         findAndReplace(currentNode);
       }
       if (currentNode.nodeType === TEXT_NODE) {
