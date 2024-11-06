@@ -13,7 +13,7 @@ _yazifetch() {
     echo "error: must be run as root"; return
   fi
 
-  local pkg="https://artas90.github.io/pkgs/yazi-${version}-$(uname -m)-${bin}${exe}"
+  local pkg="https://artas90.github.io/pkgs/yazi/yazi-${version}-$(uname -m)-${bin}${exe}"
 
   curl -s -L "${pkg}" > "/usr/bin/yazi${exe}" && \
   chmod +x "/usr/bin/yazi${exe}" && \
