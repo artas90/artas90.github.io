@@ -1,17 +1,22 @@
-if [ `whoami` = "root" ]; then
-  _hxver="24.07"
-  _hxarch=$(uname -m)
+_helixfetch() {
+  if [ `whoami` = "root" ]; then
+    local rel="https://api.github.com/repos/helix-editor/helix/releases/latest"
+    local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+    local arch=$(uname -m)
+    local pkgurl="https://github.com/helix-editor/helix/releases/download/${ver}/helix-${ver}-${arch}-linux.tar.xz"
 
-  cd /opt && \
-  curl -s -L https://github.com/helix-editor/helix/releases/download/$_hxver/helix-$_hxver-$_hxarch-linux.tar.xz | tar xJ -C . && \
-  mv helix-$_hxver-$_hxarch-linux helix && \
-  ln -sfv /opt/helix/hx /usr/bin/hx
+    mkdir -p /opt && \
+    cd /opt && \
+    curl -s -L "${pkgurl}" | tar xJ -C . && \
+    mv "helix-${ver}-${arch}-linux" "helix" && \
+    ln -sfv /opt/helix/hx /usr/bin/hx && \
+    cd
+  fi
 
-  cd
-fi
+  local dotfiles="https://raw.githubusercontent.com/artas90/dotfiles/main"
 
-mkdir -p $HOME/.config/helix && \
-curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/other/helix/config.toml > $HOME/.config/helix/config.toml
-echo "created $HOME/.config/helix/config.toml"
-
-unset _hxver _hxarch
+  mkdir -p "$HOME/.config/helix" && \
+  curl -s -L "${dotfiles}/configs/other/helix/config.toml" > "$HOME/.config/helix/config.toml" && \
+  echo "created $HOME/.config/helix/config.toml"
+}
+_helixfetch; unset _helixfetch

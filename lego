@@ -1,24 +1,23 @@
-if [ ! `whoami` = "root" ]; then
-  echo "error: must be run as root"
-  exit
-fi
+_legofetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
 
-if [ `uname -m` = "x86_64" ]; then
-  _legoarch="amd64"
-elif [ `uname -m` = "aarch64" ]; then
-  _legoarch="arm64"
-else
-  echo "error: unknown architecture"
-  exit
-fi
+  local arch=""
+  case "$(uname -m)" in
+    x86_64)  arch="amd64" ;;
+    aarch64) arch="arm64" ;;
+    *)       echo "error: unknown architecture"; return ;;
+  esac
 
-_legover="4.17.4" && \
-_legopkg="https://github.com/go-acme/lego/releases/download/v${_legover}/lego_v${_legover}_linux_${_legoarch}.tar.gz"
+  local rel="https://api.github.com/repos/go-acme/lego/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkg="https://github.com/go-acme/lego/releases/download/v${ver}/lego_v${ver}_linux_${arch}.tar.gz"
 
-mkdir _legopkg && \
-curl -s -L "${_legopkg}" | tar xz -C ./_legopkg && \
-mv ./_legopkg/lego /usr/bin/lego && \
-rm -rf _legopkg && \
-echo "created /usr/bin/lego"
-
-unset _legover _legopkg _legoarch
+  mkdir _legopkg && \
+  curl -s -L "${pkg}" | tar xz -C ./_legopkg && \
+  mv ./_legopkg/lego /usr/bin/lego && \
+  rm -rf _legopkg && \
+  echo "created /usr/bin/lego"
+}
+_legofetch; unset _legofetch

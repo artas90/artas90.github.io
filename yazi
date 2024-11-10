@@ -1,5 +1,6 @@
 _yazifetch() {
-  local version="0.3.3"
+  local rel="https://raw.githubusercontent.com/artas90/pkgs/refs/heads/main/yazi/VERSION"
+  local version=`curl -s "${rel}" | xargs`
   local bin=""
   local exe=""
 
@@ -16,7 +17,7 @@ _yazifetch() {
   local pkg="https://artas90.github.io/pkgs/yazi/yazi-${version}-$(uname -m)-${bin}${exe}"
 
   curl -s -L "${pkg}" > "/usr/bin/yazi${exe}" && \
-  chmod +x "/usr/bin/yazi${exe}" && \
+  chmod 755 "/usr/bin/yazi${exe}" && \
   echo "created /usr/bin/yazi${exe}"
 }
 _yazifetch; unset _yazifetch

@@ -1,15 +1,16 @@
-if [ ! `whoami` = "root" ]; then
-  echo "error: must be run as root"
-  exit
-fi
+_gitdeltafetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
 
-_gdver="0.18.2" && \
-_gdpkg="delta-${_gdver}-$(uname -m)-unknown-linux-musl" \
-_gdurl="https://github.com/dandavison/delta/releases/download/${_gdver}/${_gdpkg}.tar.gz"
+  local rel="https://api.github.com/repos/dandavison/delta/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="delta-${ver}-$(uname -m)-unknown-linux-musl"
+  local pkgurl="https://github.com/dandavison/delta/releases/download/${ver}/${pkgname}.tar.gz"
 
-curl -s -L "${_gdurl}" | tar xz -C . && \
-mv ./${_gdpkg}/delta /usr/bin/delta && \
-rm -rf ${_gdpkg} && \
-echo "created /usr/bin/delta"
-
-unset _gdver _gdpkg _gdurl
+  curl -s -L "${pkgurl}" | tar xz -C . && \
+  mv ./${pkgname}/delta /usr/bin/delta && \
+  rm -rf ${pkgname} && \
+  echo "created /usr/bin/delta"
+}
+_gitdeltafetch; unset _gitdeltafetch

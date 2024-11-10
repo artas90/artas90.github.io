@@ -1,15 +1,16 @@
-if [ ! `whoami` = "root" ]; then
-  echo "error: must be run as root"
-  exit
-fi
+_fdfindfetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
 
-_fdver="10.2.0" && \
-_fdpkg="fd-v${_fdver}-$(uname -m)-unknown-linux-musl"
-_fdurl="https://github.com/sharkdp/fd/releases/download/v${_fdver}/${_fdpkg}.tar.gz"
+  local rel="https://api.github.com/repos/sharkdp/fd/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="fd-v${ver}-$(uname -m)-unknown-linux-musl"
+  local pkgurl="https://github.com/sharkdp/fd/releases/download/v${ver}/${pkgname}.tar.gz"
 
-curl -s -L "${_fdurl}" | tar xz -C . && \
-mv ./${_fdpkg}/fd /usr/bin/fd && \
-rm -rf ${_fdpkg} && \
-echo "created /usr/bin/fd"
-
-unset _fdver _fdpkg _fdurl
+  curl -s -L "${pkgurl}" | tar xz -C . && \
+  mv ./${pkgname}/fd /usr/bin/fd && \
+  rm -rf ${pkgname} && \
+  echo "created /usr/bin/fd"
+}
+_fdfindfetch; unset _fdfindfetch

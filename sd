@@ -1,15 +1,16 @@
-if [ ! `whoami` = "root" ]; then
-  echo "error: must be run as root"
-  exit
-fi
+_sdsedfetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
 
-_sdver="1.0.0" && \
-_sdpkg="sd-v${_sdver}-$(uname -m)-unknown-linux-musl" \
-_sdurl="https://github.com/chmln/sd/releases/download/v${_sdver}/${_sdpkg}.tar.gz"
+  local rel="https://api.github.com/repos/chmln/sd/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="sd-v${ver}-$(uname -m)-unknown-linux-musl"
+  local pkgurl="https://github.com/chmln/sd/releases/download/v${ver}/${pkgname}.tar.gz"
 
-curl -s -L "${_sdurl}" | tar xz -C . && \
-mv ./${_sdpkg}/sd /usr/bin/sd && \
-rm -rf ${_sdpkg} && \
-echo "created /usr/bin/sd"
-
-unset _sdver _sdpkg _sdurl
+  curl -s -L "${pkgurl}" | tar xz -C . && \
+  mv ./${pkgname}/sd /usr/bin/sd && \
+  rm -rf ${pkgname} && \
+  echo "created /usr/bin/sd"
+}
+_sdsedfetch; unset _sdsedfetch

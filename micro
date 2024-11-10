@@ -7,8 +7,8 @@ _microfetch() {
       *)       echo "error: unknown architecture"; return ;;
     esac
 
-    local url="https://api.github.com/repos/zyedidia/micro/releases/latest"
-    local ver=`curl -s "${url}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+    local rel="https://api.github.com/repos/zyedidia/micro/releases/latest"
+    local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
     local pkg="https://github.com/zyedidia/micro/releases/download/v${ver}/micro-${ver}-${arch}.tar.gz"
 
     mkdir _micropkg && \
