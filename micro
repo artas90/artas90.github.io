@@ -2,7 +2,7 @@ _microfetch() {
   if [ `whoami` = "root" ]; then
     local arch=""
     case "$(uname -m)" in
-      x86_64)  arch="linux64" ;;
+      x86_64)  arch="linux64-static" ;;
       aarch64) arch="linux-arm64" ;;
       *)       echo "error: unknown architecture"; return ;;
     esac
