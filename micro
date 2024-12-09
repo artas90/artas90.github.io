@@ -1,3 +1,4 @@
+#!/bin/sh
 _microfetch() {
   if [ `whoami` = "root" ]; then
     local arch=""
@@ -14,6 +15,7 @@ _microfetch() {
     mkdir _micropkg && \
     curl -s -L "${pkg}" | tar xz -C ./_micropkg && \
     mv ./_micropkg/micro-${ver}/micro /usr/bin/micro && \
+    chmod 755 /usr/bin/micro && \
     rm -rf _micropkg && \
     echo "created /usr/bin/micro (v${ver})"
   fi

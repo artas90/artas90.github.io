@@ -1,3 +1,4 @@
+#!/bin/sh
 _sdsedfetch() {
   if [ ! `whoami` = "root" ]; then
     echo "error: must be run as root"; return
@@ -10,7 +11,8 @@ _sdsedfetch() {
 
   curl -s -L "${pkgurl}" | tar xz -C . && \
   mv ./${pkgname}/sd /usr/bin/sd && \
+  chmod 755 /usr/bin/sd && \
   rm -rf ${pkgname} && \
-  echo "created /usr/bin/sd"
+  echo "created /usr/bin/sd (v${ver})"
 }
 _sdsedfetch; unset _sdsedfetch

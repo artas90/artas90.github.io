@@ -1,15 +1,24 @@
+#!/bin/sh
 _gitdeltafetch() {
   if [ ! `whoami` = "root" ]; then
     echo "error: must be run as root"; return
   fi
 
+  local arch=""
+  case "$(uname -m)" in
+    x86_64)  arch="x86_64-unknown-linux-musl" ;;
+    aarch64) arch="aarch64-unknown-linux-gnu" ;;
+    *)       echo "error: unknown architecture"; return ;;
+  esac
+
   local rel="https://api.github.com/repos/dandavison/delta/releases/latest"
   local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
-  local pkgname="delta-${ver}-$(uname -m)-unknown-linux-musl"
+  local pkgname="delta-${ver}-${arch}"
   local pkgurl="https://github.com/dandavison/delta/releases/download/${ver}/${pkgname}.tar.gz"
 
   curl -s -L "${pkgurl}" | tar xz -C . && \
   mv ./${pkgname}/delta /usr/bin/delta && \
+  chmod 755 /usr/bin/delta && \
   rm -rf ${pkgname} && \
   echo "created /usr/bin/delta"
 }

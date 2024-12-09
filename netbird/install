@@ -1,22 +1,23 @@
+#!/bin/sh
 _netbirdfetch() {
-  local url="https://api.github.com/repos/netbirdio/netbird/releases/latest"
-  local version=`curl -s "${url}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
-  local arch=`uname -m`
-
   case "$arch" in
     x86_64)  arch="amd64" ;;
     aarch64) arch="arm64" ;;
     *) echo "Architecture ${arch} not supported"; return ;;
   esac
 
-  mkdir ./netbirdtmp
-  curl -sL https://github.com/netbirdio/netbird/releases/download/v${version}/netbird_${version}_linux_${arch}.tar.gz | tar xz -C ./netbirdtmp
+  local url="https://api.github.com/repos/netbirdio/netbird/releases/latest"
+  local version=`curl -s "${url}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local arch=`uname -m`
+  local pkg="https://github.com/netbirdio/netbird/releases/download/v${version}/netbird_${version}_linux_${arch}.tar.gz"
 
-  sudo mv ./netbirdtmp/netbird /usr/bin/netbird
-  sudo chown root:root /usr/bin/netbird
-  sudo chmod 755 /usr/bin/netbird
-
-  rm -rd ./netbirdtmp
+  mkdir ./netbirdtmp && \
+  curl -sL "${pkg}" | tar xz -C ./netbirdtmp && \
+  sudo mv ./netbirdtmp/netbird /usr/bin/netbird && \
+  sudo chown root:root /usr/bin/netbird && \
+  sudo chmod 755 /usr/bin/netbird && \
+  rm -rf ./netbirdtmp && \
+  echo "created /usr/bin/lego (v${ver})"
 
   sudo netbird service install
   sudo netbird service start

@@ -1,3 +1,4 @@
+#!/bin/sh
 _helixfetch() {
   if [ `whoami` = "root" ]; then
     local rel="https://api.github.com/repos/helix-editor/helix/releases/latest"
@@ -9,6 +10,7 @@ _helixfetch() {
     cd /opt && \
     curl -s -L "${pkgurl}" | tar xJ -C . && \
     mv "helix-${ver}-${arch}-linux" "helix" && \
+    chmod 755 /opt/helix/hx && \
     ln -sfv /opt/helix/hx /usr/bin/hx && \
     cd
   fi

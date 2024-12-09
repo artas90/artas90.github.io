@@ -1,16 +1,18 @@
-_devsetupdistribid=`grep DISTRIB_ID /etc/*-release | awk -F '=' '{print tolower($2)}'`
-if [ "$_devsetupdistribid" = 'ubuntu' ]; then
-  sudo apt install -y curl git zsh tmux mc htop fzf ripgrep nano
-fi
+#!/bin/sh
+_remotedevmachinesetup() {
+  local distribid=`grep DISTRIB_ID /etc/*-release | awk -F '=' '{print tolower($2)}'`
+  if [ "$distribid" = 'ubuntu' ]; then
+    sudo apt install -y curl git zsh tmux mc htop fzf ripgrep nano
+  fi
 
-curl https://artas90.github.io/dotfiles | sh
-curl https://artas90.github.io/fzf | sudo sh
-curl https://artas90.github.io/micro | sudo sh
-curl https://artas90.github.io/yazi | sudo sh
-# curl https://artas90.github.io/fd | sudo sh
-# curl https://artas90.github.io/sd | sudo sh
+  curl https://artas90.github.io/dotfiles | sh
+  curl https://artas90.github.io/fzf | sudo sh
+  curl https://artas90.github.io/micro | sudo sh
+  curl https://artas90.github.io/yazi | sudo sh
+  # curl https://artas90.github.io/fd | sudo sh
+  # curl https://artas90.github.io/sd | sudo sh
 
-echo >> $HOME/.tmux.conf
-echo "set-option -g default-shell \""`which zsh`"\"" >> $HOME/.tmux.conf
-
-unset _devsetupdistribid
+  echo >> $HOME/.tmux.conf
+  echo "set-option -g default-shell \""`which zsh`"\"" >> $HOME/.tmux.conf
+}
+_remotedevmachinesetup; unset _remotedevmachinesetup

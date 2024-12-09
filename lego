@@ -1,3 +1,4 @@
+#!/bin/sh
 _legofetch() {
   if [ ! `whoami` = "root" ]; then
     echo "error: must be run as root"; return
@@ -17,7 +18,8 @@ _legofetch() {
   mkdir _legopkg && \
   curl -s -L "${pkg}" | tar xz -C ./_legopkg && \
   mv ./_legopkg/lego /usr/bin/lego && \
+  chmod 755 /usr/bin/lego && \
   rm -rf _legopkg && \
-  echo "created /usr/bin/lego"
+  echo "created /usr/bin/lego (v${ver})"
 }
 _legofetch; unset _legofetch

@@ -1,18 +1,22 @@
-_ghfz="https://raw.githubusercontent.com/junegunn/fzf/master/shell"
-
-if [ `whoami` = "root" ]; then
-  _destfz="/usr/local/opt/fzf/shell"
-else
-  _destfz="$HOME/.local/share/fzf/shell"
-fi
-
-mkdir -p $_destfz
-
+#!/bin/sh
 _getfzf() {
-  curl -s "$_ghfz/$1" > "$_destfz/$1" && echo "$_ghfz/$1 -> $_destfz/$1"
+  local from="$1/$3"
+  local to="$2/$3"
+  curl -s "$from" > "$to" && echo "$to -> $to"
 }
+_getfzfall() {
+  local ghfz="https://raw.githubusercontent.com/junegunn/fzf/master/shell"
+  local destfz=""
 
-_getfzf "completion.zsh"
-_getfzf "key-bindings.zsh"
+  if [ `whoami` = "root" ]; then
+    destfz="/usr/local/opt/fzf/shell"
+  else
+    destfz="$HOME/.local/share/fzf/shell"
+  fi
 
-unset _ghfz _destfz _getfzf
+  mkdir -p $destfz
+
+  _getfzf "$ghfz" "$destfz" "completion.zsh"
+  _getfzf "$ghfz" "$destfz" "key-bindings.zsh"
+}
+unset _getfzf _getfzfall
