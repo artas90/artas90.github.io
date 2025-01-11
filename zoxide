@@ -1,0 +1,19 @@
+#!/bin/sh
+_zoxidefetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
+
+  local rel="https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="zoxide-${ver}-$(uname -m)-unknown-linux-musl"
+  local pkgurl="https://github.com/ajeetdsouza/zoxide/releases/download/v${ver}/${pkgname}.tar.gz"
+
+  mkdir _zoxide && \
+  curl -sL  "${pkgurl}" | tar xz -C _zoxide && \
+  mv -f ./_zoxide/zoxide /usr/bin/zoxide && \
+  chmod 755 /usr/bin/zoxide && \
+  rm -rf _zoxide && \
+  echo "created /usr/bin/zoxide (v${ver})"
+}
+_zoxidefetch; unset _zoxidefetch

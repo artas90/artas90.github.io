@@ -16,8 +16,8 @@ _legofetch() {
   local pkg="https://github.com/go-acme/lego/releases/download/v${ver}/lego_v${ver}_linux_${arch}.tar.gz"
 
   mkdir _legopkg && \
-  curl -s -L "${pkg}" | tar xz -C ./_legopkg && \
-  mv ./_legopkg/lego /usr/bin/lego && \
+  curl -sL  "${pkg}" | tar xz -C ./_legopkg && \
+  mv -f ./_legopkg/lego /usr/bin/lego && \
   chmod 755 /usr/bin/lego && \
   rm -rf _legopkg && \
   echo "created /usr/bin/lego (v${ver})"

@@ -8,7 +8,7 @@ _helixfetch() {
 
     mkdir -p /opt && \
     cd /opt && \
-    curl -s -L "${pkgurl}" | tar xJ -C . && \
+    curl -sL  "${pkgurl}" | tar xJ -C . && \
     mv "helix-${ver}-${arch}-linux" "helix" && \
     chmod 755 /opt/helix/hx && \
     ln -sfv /opt/helix/hx /usr/bin/hx && \
@@ -18,7 +18,7 @@ _helixfetch() {
   local dotfiles="https://raw.githubusercontent.com/artas90/dotfiles/main"
 
   mkdir -p "$HOME/.config/helix" && \
-  curl -s -L "${dotfiles}/configs/other/helix/config.toml" > "$HOME/.config/helix/config.toml" && \
+  curl -sL  "${dotfiles}/configs/other/helix/config.toml" > "$HOME/.config/helix/config.toml" && \
   echo "created $HOME/.config/helix/config.toml"
 }
 _helixfetch; unset _helixfetch

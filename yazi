@@ -17,7 +17,7 @@ _yazifetch() {
 
   local pkg="https://artas90.github.io/pkgs/yazi/yazi-${ver}-$(uname -m)-${bin}${exe}"
 
-  curl -s -L "${pkg}" > "/usr/bin/yazi${exe}" && \
+  curl -sL  "${pkg}" > "/usr/bin/yazi${exe}" && \
   chmod 755 "/usr/bin/yazi${exe}" && \
   echo "created /usr/bin/yazi${exe} (v${ver})"
 }

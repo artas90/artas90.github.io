@@ -9,8 +9,8 @@ _sdsedfetch() {
   local pkgname="sd-v${ver}-$(uname -m)-unknown-linux-musl"
   local pkgurl="https://github.com/chmln/sd/releases/download/v${ver}/${pkgname}.tar.gz"
 
-  curl -s -L "${pkgurl}" | tar xz -C . && \
-  mv ./${pkgname}/sd /usr/bin/sd && \
+  curl -sL  "${pkgurl}" | tar xz -C . && \
+  mv -f ./${pkgname}/sd /usr/bin/sd && \
   chmod 755 /usr/bin/sd && \
   rm -rf ${pkgname} && \
   echo "created /usr/bin/sd (v${ver})"

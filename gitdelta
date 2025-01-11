@@ -16,10 +16,10 @@ _gitdeltafetch() {
   local pkgname="delta-${ver}-${arch}"
   local pkgurl="https://github.com/dandavison/delta/releases/download/${ver}/${pkgname}.tar.gz"
 
-  curl -s -L "${pkgurl}" | tar xz -C . && \
-  mv ./${pkgname}/delta /usr/bin/delta && \
+  curl -sL  "${pkgurl}" | tar xz -C . && \
+  mv -f ./${pkgname}/delta /usr/bin/delta && \
   chmod 755 /usr/bin/delta && \
   rm -rf ${pkgname} && \
-  echo "created /usr/bin/delta"
+  echo "created /usr/bin/delta (v${ver})"
 }
 _gitdeltafetch; unset _gitdeltafetch

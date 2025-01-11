@@ -13,15 +13,15 @@ _microfetch() {
     local pkg="https://github.com/zyedidia/micro/releases/download/v${ver}/micro-${ver}-${arch}.tar.gz"
 
     mkdir _micropkg && \
-    curl -s -L "${pkg}" | tar xz -C ./_micropkg && \
-    mv ./_micropkg/micro-${ver}/micro /usr/bin/micro && \
+    curl -sL  "${pkg}" | tar xz -C ./_micropkg && \
+    mv -f ./_micropkg/micro-${ver}/micro /usr/bin/micro && \
     chmod 755 /usr/bin/micro && \
     rm -rf _micropkg && \
     echo "created /usr/bin/micro (v${ver})"
   fi
 
   mkdir -p $HOME/.config/micro && \
-  curl -s -L https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
+  curl -sL  https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
   echo "created $HOME/.config/micro/settings.json"
 }
 _microfetch; unset _microfetch
