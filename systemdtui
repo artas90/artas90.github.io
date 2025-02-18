@@ -1,0 +1,19 @@
+#!/bin/sh
+_systemdtuifetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
+
+  local rel="https://api.github.com/repos/rgwood/systemctl-tui/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="systemctl-tui-$(uname -m)-unknown-linux-musl"
+  local pkgurl="https://github.com/rgwood/systemctl-tui/releases/download/v${ver}/${pkgname}.tar.gz"
+
+  mkdir _systemdtui && \
+  curl -sL  "${pkgurl}" | tar xz -C _systemdtui && \
+  mv -f ./_systemdtui/systemctl-tui /usr/bin/systemctl-tui && \
+  chmod 755 /usr/bin/systemctl-tui && \
+  rm -rf _systemdtui && \
+  echo "created /usr/bin/systemctl-tui (v${ver})"
+}
+_systemdtuifetch; unset _systemdtuifetch
