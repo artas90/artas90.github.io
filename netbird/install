@@ -1,26 +1,31 @@
 #!/bin/sh
 _netbirdfetch() {
-  case "$arch" in
+  if [ ! `whoami` = "root" ]; then
+    echo "error: must be run as root"; return
+  fi
+
+  case "$(uname -m)" in
     x86_64)  arch="amd64" ;;
     aarch64) arch="arm64" ;;
-    *) echo "Architecture ${arch} not supported"; return ;;
+    *)       echo "error: unknown architecture"; return ;;
   esac
 
   local url="https://api.github.com/repos/netbirdio/netbird/releases/latest"
-  local version=`curl -s "${url}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
-  local arch=`uname -m`
-  local pkg="https://github.com/netbirdio/netbird/releases/download/v${version}/netbird_${version}_linux_${arch}.tar.gz"
+  local ver=`curl -s "${url}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkg="https://github.com/netbirdio/netbird/releases/download/v${ver}/netbird_${ver}_linux_${arch}.tar.gz"
 
   mkdir ./netbirdtmp && \
   curl -sL "${pkg}" | tar xz -C ./netbirdtmp && \
-  sudo mv ./netbirdtmp/netbird /usr/bin/netbird && \
-  sudo chown root:root /usr/bin/netbird && \
-  sudo chmod 755 /usr/bin/netbird && \
+  mv -f ./netbirdtmp/netbird /usr/bin/netbird && \
+  chown root:root /usr/bin/netbird && \
+  chmod 755 /usr/bin/netbird && \
   rm -rf ./netbirdtmp && \
-  echo "created /usr/bin/lego (v${ver})"
+  echo "created /usr/bin/netbird (v${ver})"
 
-  sudo netbird service install
-  sudo netbird service start
+  netbird service stop      2>/dev/null
+  netbird service uninstall 2>/dev/null
+  netbird service install
+  netbird service start
 
   # For Synology
   # curl -sL https://artas90.github.io/netbird/tun-enable | sudo tee /usr/bin/netbird-tun-enable > /dev/null
