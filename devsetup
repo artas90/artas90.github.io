@@ -12,6 +12,9 @@ _remotedevmachinesetup() {
   # curl https://artas90.github.io/fd | sudo sh
   # curl https://artas90.github.io/sd | sudo sh
 
+  echo >> "$HOME/.bash_profile"
+  echo "export TERM=xterm-256color" >> "$HOME/.bash_profile"
+
   echo >> $HOME/.tmux.conf
   echo "set-option -g default-shell \""`which zsh`"\"" >> $HOME/.tmux.conf
 }
