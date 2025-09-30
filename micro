@@ -1,27 +1,11 @@
 #!/bin/sh
 _microfetch() {
-  if [ `whoami` = "root" ]; then
-    local arch=""
-    case "$(uname -m)" in
-      x86_64)  arch="linux64-static" ;;
-      aarch64) arch="linux-arm64" ;;
-      *)       echo "error: unknown architecture"; return ;;
-    esac
+  local rel="https://raw.githubusercontent.com/artas90/pkgs/refs/heads/main/micro/VERSION"
+  local ver=`curl -s "${rel}" | xargs`
+  local pkg="https://artas90.github.io/pkgs/micro/micro-${ver}-$(uname -m)"
 
-    local rel="https://api.github.com/repos/zyedidia/micro/releases/latest"
-    local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
-    local pkg="https://github.com/zyedidia/micro/releases/download/v${ver}/micro-${ver}-${arch}.tar.gz"
-
-    mkdir _micropkg && \
-    curl -sL  "${pkg}" | tar xz -C ./_micropkg && \
-    mv -f ./_micropkg/micro-${ver}/micro /usr/bin/micro && \
-    chmod 755 /usr/bin/micro && \
-    rm -rf _micropkg && \
-    echo "created /usr/bin/micro (v${ver})"
-  fi
-
-  mkdir -p $HOME/.config/micro && \
-  curl -sL  https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
-  echo "created $HOME/.config/micro/settings.json"
+  curl -sL  "${pkg}" > "/usr/bin/micro" && \
+  chmod 755 "/usr/bin/micro" && \
+  echo "created /usr/bin/micro$ (v${ver})"
 }
 _microfetch; unset _microfetch
