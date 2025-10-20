@@ -6,6 +6,6 @@ _microfetch() {
 
   curl -sL  "${pkg}" > "/usr/bin/micro" && \
   chmod 755 "/usr/bin/micro" && \
-  echo "created /usr/bin/micro$ (v${ver})"
+  echo "created /usr/bin/micro (v${ver})"
 }
 _microfetch; unset _microfetch
