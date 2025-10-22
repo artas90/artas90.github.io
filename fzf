@@ -1,4 +1,30 @@
 #!/bin/sh
+_fzffetch() {
+  if [ ! `whoami` = "root" ]; then
+    echo "warning: fzf binary can be installed only by root"; return
+  fi
+
+  local arch=""
+  case "$(uname -m)" in
+    x86_64)  arch="amd64" ;;
+    aarch64) arch="arm64" ;;
+    *)       echo "error: unknown architecture"; return ;;
+  esac
+
+  local rel="https://api.github.com/repos/junegunn/fzf/releases/latest"
+  local ver=`curl -s "${rel}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | tr -d 'v'`
+  local pkgname="fzf-${ver}-linux_${arch}"
+  local pkgurl="https://github.com/junegunn/fzf/releases/download/v${ver}/${pkgname}.tar.gz"
+
+  mkdir _fzf && \
+  curl -sL "${pkgurl}" | tar xz -C _fzf && \
+  mv -f ./_fzf/fzf /usr/bin/fzf && \
+  chmod 755 /usr/bin/fzf && \
+  rm -rf _fzf && \
+  echo "created /usr/bin/fzf (v${ver})"
+}
+_fzffetch; unset _fzffetch
+
 _getfzf() {
   local from="$1/$3"
   local to="$2/$3"
