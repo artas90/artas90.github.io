@@ -1,13 +1,5 @@
-// config/_misc.ts
-var PROTECT_YOUR_PC = {
-  Recommended: 1,
-  OnlyUpdates: 2,
-  AutomaticProtectionDisabled: 3
-};
-var getMiscParams = (params) => ({
-  ProtectYourPC: params.ProtectYourPC && PROTECT_YOUR_PC[params.ProtectYourPC],
-  PasswordExpiration: params.PasswordExpiration
-});
+// .misc/autounattend.ts
+import { readFileSync } from "node:fs";
 
 // lib/utils.ts
 import fs from "node:fs";
@@ -33,7 +25,7 @@ var renderXmlTag = (tag, indent, endIndent, rendered, targetPath) => {
 var isObject = (value) => Object.prototype.toString.call(value) === "[object Object]";
 var makePs1List = (indent) => {
   const indentStr = " ".repeat(indent);
-  return (items) => `${indentStr}${items.map((p) => `'${p}'`).join(`;\r
+  return (items) => `${indentStr}${items.map((p) => `'${p}'`).join(`;
 ${indentStr}`)};`;
 };
 var toDword = ([k, v]) => [
@@ -46,8 +38,20 @@ var parseJsonc = (jsonc) => {
   return JSON.parse(stripJsonComments(jsonc));
 };
 
+// config/_misc.ts
+var PROTECT_YOUR_PC = {
+  Recommended: 1,
+  OnlyUpdates: 2,
+  AutomaticProtectionDisabled: 3
+};
+var getMiscParams = (params) => ({
+  ProtectYourPC: params.ProtectYourPC && PROTECT_YOUR_PC[params.ProtectYourPC],
+  PasswordExpiration: params.PasswordExpiration
+});
+
 // config/_disk-parts.ts
 var echo = (cmd) => "echo:" + cmd;
+var cmdsGroup = (cmds) => 'cmd.exe /c ">>"X:\\diskpart.txt" (' + cmds.map(echo).join("&") + ')"';
 var getDefaultDiskParams = () => ({
   // Disk settings
   PartitionMode: void 0,
@@ -58,6 +62,26 @@ var getDefaultDiskParams = () => ({
   WindowsDrive: "W",
   RecoveryDrive: "R"
 });
+var MBR = (settings) => [
+  [
+    `SELECT DISK=0`,
+    "CLEAN",
+    `CREATE PARTITION PRIMARY SIZE=100`,
+    `FORMAT QUICK FS=NTFS LABEL="System Reserved"`,
+    `ASSIGN LETTER=${settings.BootDrive}`,
+    "ACTIVE",
+    "CREATE PARTITION PRIMARY",
+    `SHRINK MINIMUM=${settings.RecoverySize}`
+  ],
+  [
+    `FORMAT QUICK FS=NTFS LABEL="Windows"`,
+    `ASSIGN LETTER=${settings.WindowsDrive}`,
+    `CREATE PARTITION PRIMARY`,
+    `FORMAT QUICK FS=NTFS LABEL="Recovery"`,
+    `ASSIGN LETTER=${settings.RecoveryDrive}`,
+    `SET ID=27`
+  ]
+].map(cmdsGroup);
 var GPT = (settings) => [
   [
     `SELECT DISK=0`,
@@ -81,11 +105,12 @@ var GPT = (settings) => [
     `SET ID=^"de94bba4-06d1-4d40-a16a-bfd50179d6ac^"`,
     `GPT ATTRIBUTES=0x8000000000000001`
   ]
-].map((c) => 'cmd.exe /c ">>"X:\\diskpart.txt" (' + c.map(echo).join("&") + ')"');
-var getDiskpartCommands = (cmds) => [
-  ...GPT(cmds),
+].map(cmdsGroup);
+var getCmds = (cmds) => [
+  ...cmds.PartitionLayout === "GPT" ? GPT(cmds) : MBR(cmds),
   'cmd.exe /c "diskpart.exe /s "X:\\diskpart.txt" >>"X:\\diskpart.log" || ( type "X:\\diskpart.log" & echo diskpart encountered an error. & pause & exit /b 1 )"'
 ];
+var getDiskpartCommands = (cmds) => Boolean(cmds.PartitionLayout) ? getCmds(cmds) : [];
 
 // config/_windows-pe.ts
 var BYPASS_REQUIREMENTS = [
@@ -98,7 +123,7 @@ var getWindowsPeCmds = (params = {}) => {
   if (params.BypassRequirementsCheck) {
     commands.push(...BYPASS_REQUIREMENTS);
   }
-  if (params.PartitionMode === "Unattended" && params.PartitionLayout === "GPT") {
+  if (params.PartitionMode === "Unattended") {
     commands.push(...getDiskpartCommands(params));
   }
   return {
@@ -108,11 +133,26 @@ var getWindowsPeCmds = (params = {}) => {
 var FIRST_LOGON_COMMANDS = [
   `powershell.exe -WindowStyle Normal -NoProfile -Command "Get-Content -LiteralPath 'C:\\Windows\\Setup\\Scripts\\FirstLogon.ps1' -Raw | Invoke-Expression;"`
 ];
-var getFirstLogonCommands = (params) => ({
+var getFirstLogonCommands = (params = {}) => ({
   FirstLogonCommands: [
     ...FIRST_LOGON_COMMANDS,
     ...params.FirstLogonCommands || []
   ]
+});
+var COMPACT_OS = {
+  Always: "true",
+  Never: "false",
+  Default: ""
+};
+var getCompactOsMode = (params = {}) => ({
+  CompactOsMode: COMPACT_OS[params.CompactOsMode || "Default"] || ""
+});
+var getWindowsPeParams = (params) => ({
+  ...getDefaultDiskParams(),
+  ...params,
+  ...getWindowsPeCmds(params),
+  ...getFirstLogonCommands(params),
+  ...getCompactOsMode(params)
 });
 
 // config/_desktop-icons.ts
@@ -182,13 +222,10 @@ var GENERIC_KEYS = {
   "Windows Server 2016 Essentials": "JCKRF-N37P4-C2D82-9YXRT-4M63B",
   // -- Windows Server Semi-Annual Channel -- -- --
   "Windows Server Standard": "N2KJX-J94YW-TQVFB-DG9YT-724CC",
-  "Windows Server Datacenter": "6NMRW-2C8FM-D24W7-TQWMY-CWH2D",
-  // -- Placeholders -- -- --
-  "@NoWindowsActivationKey@": "@NoWindowsActivationKey@",
-  "@WindowsActivationKeyPlaceholder@": "@WindowsActivationKeyPlaceholder@"
+  "Windows Server Datacenter": "6NMRW-2C8FM-D24W7-TQWMY-CWH2D"
 };
-var _getGenericKey = (key = "@NoWindowsActivationKey@") => {
-  if (!key || key === "@NoWindowsActivationKey@") return void 0;
+var _getGenericKey = (key) => {
+  if (!key) return void 0;
   const name = GENERIC_KEYS[key];
   if (!name) throw new Error(`Generic activation key ${key} wasn't found`);
   return name;
@@ -2812,8 +2849,8 @@ var LOCATIONS = {
     Id: 161832258
   }
 };
-var getLocationId = (key = "UNKNOWN") => {
-  if (key === "UNKNOWN") return void 0;
+var getLocationId = (key) => {
+  if (!key) return void 0;
   const location = LOCATIONS[key];
   if (!location) throw new Error(`Location '${key}' not found`);
   return location.Id;
@@ -2840,7 +2877,7 @@ var getLockoutParams = (params) => ({
 });
 
 // config/_bloatware.ts
-var BLOATWARE = /* @__PURE__ */ new Map([
+var BLOATWARE = [
   [
     "RemoveInternetExplorer",
     {
@@ -3750,22 +3787,23 @@ var BLOATWARE = /* @__PURE__ */ new Map([
       ]
     }
   ]
-]);
+];
+var BLOATWARE_MAP = new Map(BLOATWARE);
 var _collect = (acc, list = []) => acc.push(...list.map((p) => p[0]));
 var getRemoveBloatwareParams = (params = {}, indent = 0) => {
+  const Ps1List = makePs1List(indent);
   const remove = [
     [],
     [],
     []
   ];
-  for (const app of Array.from(BLOATWARE.keys()).sort()) {
-    if (!params[app]) continue;
-    const item = BLOATWARE.get(app);
-    _collect(remove[0], item.Packages);
-    _collect(remove[1], item.Features);
-    _collect(remove[2], item.Capabilities);
+  for (const key of Array.from(BLOATWARE_MAP.keys()).sort()) {
+    if (!params[key]) continue;
+    const bloatware = BLOATWARE_MAP.get(key);
+    _collect(remove[0], bloatware.Packages || []);
+    _collect(remove[1], bloatware.Features || []);
+    _collect(remove[2], bloatware.Capabilities || []);
   }
-  const Ps1List = makePs1List(indent);
   return {
     removePackages: Ps1List(remove[0]),
     removeFeatures: Ps1List(remove[1]),
@@ -3822,13 +3860,10 @@ var getDefaultParams = () => ({
   UserLocale: "",
   SetupUILanguage: "",
   WindowsPeOptions: "",
-  GeoId: "UNKNOWN",
+  GeoId: "",
   TimeZone: "",
   // System settings
   ProcessorArchitecture: "amd64",
-  BypassRequirementsCheck: false,
-  BypassNetworkCheck: false,
-  CompactOsMode: "Default",
   // Windows features
   ProtectYourPC: "Recommended",
   // OOBE settings
@@ -3836,8 +3871,6 @@ var getDefaultParams = () => ({
   HideWirelessSetupInOOBE: true,
   HideOnlineAccountScreens: true,
   FirstLogonCommands: [],
-  // Disk settings
-  ...getDefaultDiskParams(),
   // Product key and licensing
   ProductKey: "",
   AcceptEula: true,
@@ -3893,8 +3926,7 @@ var BloatwareListIndent = 2;
 var getParams = (params = {}) => ({
   ...getDefaultParams(),
   ...params,
-  ...getWindowsPeCmds(params),
-  ...getFirstLogonCommands(params),
+  ...getWindowsPeParams(params),
   ...getGenericKeys(params),
   ...getLockoutParams(params),
   ...getRemoveBloatwareParams(params, BloatwareListIndent),
@@ -3916,39 +3948,25 @@ function WindowsPE_xml_default($) {
 `);
   }
   p.push(`  </component>
-  <component name="Microsoft-Windows-Setup" processorArchitecture="`, $.ProcessorArchitecture, `" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">`);
-  if (true) {
-    p.push(`
+  <component name="Microsoft-Windows-Setup" processorArchitecture="`, $.ProcessorArchitecture, `" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
     <ImageInstall>
-      <OSImage>
+      <OSImage>`);
+  if ($.PartitionMode === "Unattended") {
+    p.push(`
         <InstallTo>
           <DiskID>0</DiskID>
           <PartitionID>3</PartitionID>
-        </InstallTo>
+        </InstallTo>`);
+  }
+  if ($.CompactOsMode) {
+    p.push(`
+        <Compact>`, $.CompactOsMode, `</Compact>
+`);
+  }
+  p.push(`
       </OSImage>
     </ImageInstall>
-    `);
-  }
-  if ($._AutoDiskTodo) {
-    p.push(`
-    <ImageInstall>
-      <OSImage>
-        <Compact>`, $.CompactOsMode === "Always" ? "true" : "false", `</Compact>
-      </OSImage>
-    </ImageInstall>`);
-  }
-  if ($._AutoDiskTodo11) {
-    p.push(`
-    <ImageInstall>
-      <OSImage>
-        <InstallTo>
-          <DiskID>0</DiskID>
-          <PartitionID>3</PartitionID>
-        </InstallTo>
-      </OSImage>
-    </ImageInstall>`);
-  }
-  p.push(`<UserData>
+    <UserData>
       <ProductKey>`);
   if ($.ProductKey) {
     p.push(`
@@ -5043,7 +5061,7 @@ function DefaultUser_ps1_default($) {
       'SubscribedContent-353698Enabled';
       'SystemPaneSuggestionsEnabled';
     );
-    
+
     foreach( $name in $names ) {
       reg.exe add "HKU\\DefaultUser\\Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager" /v $name /t REG_DWORD /d 0 /f;
     }
@@ -5157,7 +5175,7 @@ function FirstLogon_ps1_default($) {
 function NoDriveAutoRun_ps1_default($) {
   const p = [];
   p.push(`$params = @{
-    Path = 'Registry::HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer';
+    Path = 'Registry::HKLM\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Policies\\\\Explorer';
 };
 New-Item @params -ErrorAction 'SilentlyContinue';
 Set-ItemProperty @params -Name 'NoDriveAutoRun' -Type 'DWord' -Value $(
@@ -5192,6 +5210,7 @@ var replaceLink = (content, options) => {
   const link = !value || value === "@GeneratorLinkEmpty@" ? "" : String(value);
   return content.replace("@GeneratorLink@", link);
 };
+var toWindowsNewlines = (content) => content.replace(/\r\n/g, "\n").replace(/\n/g, "\r\n");
 var generate = (options) => `<?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
   @GeneratorLink@
@@ -5226,10 +5245,24 @@ var generate = (options) => `<?xml version="1.0" encoding="utf-8"?>
   FileTag(FirstLogon_ps1_default(options), "C:\\Windows\\Setup\\Scripts\\FirstLogon.ps1")
 ].filter(Boolean).join("\n    ")}
   </Extensions>
-</unattend>`.replace("@GeneratorLink@", !!options["@GeneratorLink@"] && options["@GeneratorLink@"] !== "@GeneratorLinkEmpty@" ? String(options["@GeneratorLink@"]) : "");
-var generateXml = (options) => replaceLink(generate(getParams(options)), options);
+</unattend>`;
+var generateXml = (options) => {
+  let content = generate(getParams(options));
+  content = replaceLink(content, options);
+  content = toWindowsNewlines(content);
+  return content;
+};
 var generator_default = generateXml;
 
-// .misc/_autounattend.ts
-var input = parseJsonc(await new Response(Deno.stdin.readable).text());
-console.log(generator_default(input));
+// .misc/autounattend.ts
+var main = async () => {
+  const fname = process.argv[2];
+  try {
+    const content = readFileSync(fname || process.stdin.fd, "utf-8");
+    if (content) process.stdout.write(generator_default(parseJsonc(content)));
+  } catch (error) {
+    const source = fname ? `file '${fname}'` : "stdin";
+    console.error(`Error reading from ${source}: ${error.message}`);
+  }
+};
+main();
