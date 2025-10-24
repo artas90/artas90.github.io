@@ -9,10 +9,10 @@ _remotedevmachinesetup() {
   curl https://artas90.github.io/fzf | sudo sh
   curl https://artas90.github.io/micro | sudo sh
   curl https://artas90.github.io/yazi | sudo sh
-  # curl https://artas90.github.io/gitdelta | sudo sh
-  # curl https://artas90.github.io/zoxide | sudo sh
-  # curl https://artas90.github.io/fd | sudo sh
-  # curl https://artas90.github.io/sd | sudo sh
+  curl https://artas90.github.io/gitdelta | sudo sh
+  curl https://artas90.github.io/zoxide | sudo sh
+  curl https://artas90.github.io/fd | sudo sh
+  curl https://artas90.github.io/sd | sudo sh
 
   echo >> "$HOME/.bash_profile"
   echo "export TERM=xterm-256color" >> "$HOME/.bash_profile"
