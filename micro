@@ -1,8 +1,8 @@
 #!/bin/sh
 _microfetch() {
-  local rel="https://raw.githubusercontent.com/artas90/pkgs/refs/heads/main/micro/VERSION"
+  local rel="https://raw.githubusercontent.com/skyfalconua/pkgs/refs/heads/main/micro/VERSION"
   local ver=`curl -s "${rel}" | xargs`
-  local pkg="https://artas90.github.io/pkgs/micro/micro-${ver}-$(uname -m)"
+  local pkg="https://skyfalconua.github.io/pkgs/micro/micro-${ver}-$(uname -m)"
 
   curl -sL  "${pkg}" > "/usr/bin/micro" && \
   chmod 755 "/usr/bin/micro" && \

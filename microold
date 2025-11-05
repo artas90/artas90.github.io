@@ -21,7 +21,7 @@ _microfetch() {
   fi
 
   mkdir -p $HOME/.config/micro && \
-  curl -sL  https://raw.githubusercontent.com/artas90/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
+  curl -sL  https://raw.githubusercontent.com/skyfalconua/dotfiles/main/configs/base/micro/settings.json > $HOME/.config/micro/settings.json
   echo "created $HOME/.config/micro/settings.json"
 }
 _microfetch; unset _microfetch

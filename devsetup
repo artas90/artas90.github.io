@@ -5,14 +5,14 @@ _remotedevmachinesetup() {
     sudo apt install -y curl git zsh tmux mc htop fzf ripgrep nano
   fi
 
-  curl https://artas90.github.io/dotfiles | sh
-  curl https://artas90.github.io/fzf | sudo sh
-  curl https://artas90.github.io/micro | sudo sh
-  curl https://artas90.github.io/yazi | sudo sh
-  curl https://artas90.github.io/gitdelta | sudo sh
-  curl https://artas90.github.io/zoxide | sudo sh
-  curl https://artas90.github.io/fd | sudo sh
-  curl https://artas90.github.io/sd | sudo sh
+  curl https://skyfalconua.github.io/dotfiles | sh
+  curl https://skyfalconua.github.io/fzf | sudo sh
+  curl https://skyfalconua.github.io/micro | sudo sh
+  curl https://skyfalconua.github.io/yazi | sudo sh
+  curl https://skyfalconua.github.io/gitdelta | sudo sh
+  curl https://skyfalconua.github.io/zoxide | sudo sh
+  curl https://skyfalconua.github.io/fd | sudo sh
+  curl https://skyfalconua.github.io/sd | sudo sh
 
   echo >> "$HOME/.bash_profile"
   echo "export TERM=xterm-256color" >> "$HOME/.bash_profile"

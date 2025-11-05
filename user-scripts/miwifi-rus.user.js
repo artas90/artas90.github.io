@@ -6,7 +6,7 @@
 // @match        *192.168.1.1/*
 // @match        *192.168.0.1/*
 // @match        *miwifi.com/*
-// @downloadURL  https://artas90.github.io/user-scripts/miwifi-rus.user.js
+// @downloadURL  https://skyfalconua.github.io/user-scripts/miwifi-rus.user.js
 // ==/UserScript==
 
 // Based on

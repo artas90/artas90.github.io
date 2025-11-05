@@ -28,7 +28,7 @@ _netbirdfetch() {
   netbird service start
 
   # For Synology
-  # curl -sL https://artas90.github.io/netbird/tun-enable | sudo tee /usr/bin/netbird-tun-enable > /dev/null
+  # curl -sL https://skyfalconua.github.io/netbird/tun-enable | sudo tee /usr/bin/netbird-tun-enable > /dev/null
   # sudo chmod 755 /usr/bin/netbird-tun-enable
 }
 _netbirdfetch; unset _netbirdfetch

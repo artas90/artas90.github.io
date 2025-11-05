@@ -15,7 +15,7 @@ _helixfetch() {
     cd
   fi
 
-  local dotfiles="https://raw.githubusercontent.com/artas90/dotfiles/main"
+  local dotfiles="https://raw.githubusercontent.com/skyfalconua/dotfiles/main"
 
   mkdir -p "$HOME/.config/helix" && \
   curl -sL  "${dotfiles}/configs/other/helix/config.toml" > "$HOME/.config/helix/config.toml" && \

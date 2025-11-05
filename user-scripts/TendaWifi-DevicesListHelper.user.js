@@ -3,7 +3,7 @@
 // @description  Allow to import and export devices list from/to csv file
 // @icon         http://tendawifi.com/favicon.ico
 // @match        *tendawifi.com/*
-// @downloadURL  https://artas90.github.io/user-scripts/TendaWifi-DevicesListHelper.user.js
+// @downloadURL  https://skyfalconua.github.io/user-scripts/TendaWifi-DevicesListHelper.user.js
 // @license      MIT
 // ==/UserScript==
 

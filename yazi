@@ -1,6 +1,6 @@
 #!/bin/sh
 _yazifetch() {
-  local rel="https://raw.githubusercontent.com/artas90/pkgs/refs/heads/main/yazi/VERSION"
+  local rel="https://raw.githubusercontent.com/skyfalconua/pkgs/refs/heads/main/yazi/VERSION"
   local ver=`curl -s "${rel}" | xargs`
   local bin=""
   local exe=""
@@ -15,7 +15,7 @@ _yazifetch() {
     echo "error: must be run as root"; return
   fi
 
-  local pkg="https://artas90.github.io/pkgs/yazi/yazi-${ver}-$(uname -m)-${bin}${exe}"
+  local pkg="https://skyfalconua.github.io/pkgs/yazi/yazi-${ver}-$(uname -m)-${bin}${exe}"
 
   curl -sL  "${pkg}" > "/usr/bin/yazi${exe}" && \
   chmod 755 "/usr/bin/yazi${exe}" && \

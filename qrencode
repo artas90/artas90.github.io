@@ -1,8 +1,8 @@
 #!/bin/sh
 _qrencodefetch() {
-  local rel="https://raw.githubusercontent.com/artas90/pkgs/refs/heads/main/qrencode/VERSION"
+  local rel="https://raw.githubusercontent.com/skyfalconua/pkgs/refs/heads/main/qrencode/VERSION"
   local ver=`curl -s "${rel}" | xargs`
-  local pkg="https://artas90.github.io/pkgs/qrencode/qrencode-${ver}-$(uname -m)"
+  local pkg="https://skyfalconua.github.io/pkgs/qrencode/qrencode-${ver}-$(uname -m)"
 
   curl -sL  "${pkg}" > "/usr/bin/qrencode" && \
   chmod 755 "/usr/bin/qrencode" && \
