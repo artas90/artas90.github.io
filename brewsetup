@@ -1,10 +1,11 @@
 #!/bin/sh
 _brewsetup() {
   brew install \
-    firefox ghostty zed ukelele keepassxc pinta \
+    firefox ghostty zed keepassxc pinta macpacker \
     visual-studio-code font-cascadia-code-nf \
     tmux wget mc htop ncdu micro fzf ripgrep jq \
     yazi carapace zoxide git-delta gitui tree bat \
-    deno aria2 entr xz pixz pigz sevenzip podman pstree
+    deno aria2 entr xz pixz pigz sevenzip podman pstree \
+    gemini-cli claude-code codex
 }
 _brewsetup; unset _brewsetup
